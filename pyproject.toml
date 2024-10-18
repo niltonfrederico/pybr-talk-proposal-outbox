@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "django-saga-outbox-talk"
+version = "0.1.0"
+description = "Talk proposal for Python Brasil 2024"
+authors = [
+    "Nilton Frederico Teixeira <9078708+niltonfrederico@users.noreply.github.com>",
+]
+license = "UNLICENSE"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+django = ">=4,<=5.1"
+django-stomp = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+select = ["E", "F", "W", "B", "S"]
+max-complexity = 15
+ignore = ["E203", "W503", "E731"]
+per-file-ignores = { "tests/*" = ["S101"] }
+max-line-length = 120
+exclude = ["migrations", "**/migrations/*"]
+
+[tool.pycodestyle]
+ignore = ["W503", "E701"]
+max-line-length = 120
+
+[tool.isort]
+force_single_line = true
+ensure_newline_before_comments = true
+line_length = 120
+skip_glob = ["**/migrations/*.py"]
+use_parentheses = true
+multi_line_output = 3
+include_trailing_comma = true
+lines_between_types = 1
+
+[tool.mypy]
+files = ["left-feet/**/*.py", "saga-outbox-example/**/*.py"]
+show_column_numbers = true
+show_error_context = false
+follow_imports = "skip"
+cache_dir = "/dev/null"
+ignore_missing_imports = true
+disallow_untyped_calls = false
+warn_return_any = false
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = false
+warn_unused_ignores = false
+disallow_untyped_defs = false
+check_untyped_defs = false

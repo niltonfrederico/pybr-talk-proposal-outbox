@@ -1,0 +1,106 @@
+version: "3.8"
+
+services:
+  # Django Applications
+  estoque:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db_estoque
+      - rabbitmq
+    volumes:
+      - ./left-feet/estoque:/app
+    environment:
+      - DATABASE_URL=postgres://user:password@db_estoque:5432/estoque_db
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672/
+    profiles:
+      - left-feet
+
+  pagamentos:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    depends_on:
+      - db_pagamentos
+      - rabbitmq
+    volumes:
+      - ./left-feet/pagamentos:/app
+    environment:
+      - DATABASE_URL=postgres://user:password@db_pagamentos:5432/pagamentos_db
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672/
+    profiles:
+      - left-feet
+
+  pedidos:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    depends_on:
+      - db_pedidos
+      - rabbitmq
+    volumes:
+      - ./left-feet/pedidos:/app
+    environment:
+      - DATABASE_URL=postgres://user:password@db_pedidos:5432/pedidos_db
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672/
+    profiles:
+      - left-feet
+
+  # PostgreSQL Databases
+  db_estoque:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=estoque_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - pgdata_estoque:/var/lib/postgresql/data
+    profiles:
+      - dbs
+
+  db_pagamentos:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=pagamentos_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - pgdata_pagamentos:/var/lib/postgresql/data
+    profiles:
+      - dbs
+
+  db_pedidos:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=pedidos_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - pgdata_pedidos:/var/lib/postgresql/data
+    profiles:
+      - dbs
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      - ./rabbitmq-init.sh:/docker-entrypoint-initdb.d/rabbitmq-init.sh
+
+volumes:
+  pgdata_estoque:
+  pgdata_pagamentos:
+  pgdata_pedidos:
+  pgdata_produtos:
